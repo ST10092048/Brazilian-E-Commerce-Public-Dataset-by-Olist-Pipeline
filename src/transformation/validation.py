@@ -1,0 +1,87 @@
+from src.utils.helpers import save
+from src.utils.logger import get_logger
+import pandas as pd
+
+logger = get_logger(__name__,module_name='validation')
+
+def run_validation(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.DataFrame]:
+
+    validated_tables = {}
+
+    logger.info(f"Running validation for {len(tables)} tables")
+
+    for table_name, df in tables.items():
+        logger.info(f"Validating table: {table_name}")
+
+        if table_name not in rules:
+            raise KeyError(f"No validation rules defined for table '{table_name}'")
+
+        df = df.copy()
+        df["is_valid"] = True
+        df["error_reason"] = ""
+
+        table_rules = rules[table_name]
+
+        if table_rules.get("unique_cols"):
+            df = check_unique(df, table_name, table_rules["unique_cols"])
+
+        if table_rules.get("not_null"):
+            df = check_null_values(df, table_name, table_rules["not_null"])
+
+        if table_rules.get("payment_value"):
+            df = check_payments(df, table_name, table_rules["payment_value"])
+
+        # split data
+        rejected = df[df["is_valid"] == False]
+        valid = df[df["is_valid"]]
+
+        if not rejected.empty:
+            save(rejected, "rejected", table_name)
+            logger.warning(f"{len(rejected)} rejected rows saved for {table_name}")
+
+        validated_tables[table_name] = valid
+
+    logger.info("Validation step completed")
+    return validated_tables
+
+
+
+def check_unique(df: pd.DataFrame, table_name: str, columns: list[str]) -> pd.DataFrame:
+    duplicates = df.duplicated(subset=columns, keep=False)
+
+    if duplicates.any():
+        logger.warning(f"Duplicates found in {table_name} for {columns}")
+
+        df.loc[duplicates, "is_valid"] = False
+        df.loc[duplicates, "error_reason"] += "duplicate"
+
+    return df
+
+
+def check_null_values(df: pd.DataFrame, table_name: str, columns: list[str]) -> pd.DataFrame:
+    null_mask = df[columns].isnull().any(axis=1)
+
+    if null_mask.any():
+        logger.warning(f"Null values found in {table_name} for {columns}")
+
+        df.loc[null_mask, "is_valid"] = False
+        df.loc[null_mask, "error_reason"] += "null_value"
+
+    return df
+
+
+def check_payments(df: pd.DataFrame, table_name: str, columns: list[str]) -> pd.DataFrame:
+    invalid_payment = (df[columns] <= 0).any(axis=1)
+
+    if invalid_payment.any():
+        logger.warning(f"Invalid payment values found in {table_name}")
+
+        df.loc[invalid_payment, "is_valid"] = False
+        df.loc[invalid_payment, "error_reason"] += "invalid_payment"
+
+    return df
+
+
+
+
+
