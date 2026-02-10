@@ -41,6 +41,7 @@ TABLE_RULES = {
         'unique_col': ['order_id', 'customer_id'],
         'not_null': ['order_id', 'customer_id', 'order_status'],
         'quality_columns': ['order_id', 'customer_id', 'order_status'],
+        'order_valid':['order_id','customer_id'],
     },
     'olist_products_dataset': {
         'string_cols': ['product_category_name', ],

@@ -2,10 +2,6 @@
 import pandas as pd
 
 def table_quality_metrics(df: pd.DataFrame) -> dict:
-    """
-    Compute dataset-level quality metrics.
-    Assumes df has 'is_valid' column from validation.
-    """
     total_rows = len(df)
     if total_rows == 0:
         return {}
@@ -23,9 +19,7 @@ def table_quality_metrics(df: pd.DataFrame) -> dict:
 
 
 def column_quality_metrics(df: pd.DataFrame, columns: list[str]) -> dict:
-    """
-    Compute column-level quality metrics: null rate and distinct rate.
-    """
+
     metrics = {}
 
     for col in columns:

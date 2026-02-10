@@ -22,10 +22,6 @@ def run_cleaning(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.D
         # Numeric cleaning
         df = numeric_cleaning(df, table_rules.get("number_cols", {}))
 
-        # Datetime cleaning
-        # df = datetime_cleaning(df, table_rules.get("datetime_cols", {}))
-
-        # Drop duplicates if subset specified
         drop_subset = table_rules.get("drop_duplicates")
         if drop_subset:
             missing = set(drop_subset) - set(df.columns)
@@ -34,8 +30,6 @@ def run_cleaning(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.D
             df = df.drop_duplicates(subset=drop_subset)
 
         cleaned[table_name] = df
-        print(table_name)
-        print(df)
 
     return cleaned
 

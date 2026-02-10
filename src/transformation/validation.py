@@ -1,20 +1,22 @@
+from src.transformation.pre_validation_stage.orders import check_order
+from src.transformation.pre_validation_stage.payments import check_payments
 from src.utils.helpers import save
 from src.utils.logger import get_logger
 import pandas as pd
 
-logger = get_logger(__name__,module_name='validation')
+logger = get_logger(__name__,module_name='pre_validation_stage')
 
 def run_validation(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.DataFrame]:
 
     validated_tables = {}
 
-    logger.info(f"Running validation for {len(tables)} tables")
+    logger.info(f"Running pre_validation_stage for {len(tables)} tables")
 
     for table_name, df in tables.items():
         logger.info(f"Validating table: {table_name}")
 
         if table_name not in rules:
-            raise KeyError(f"No validation rules defined for table '{table_name}'")
+            raise KeyError(f"No pre_validation_stage rules defined for table '{table_name}'")
 
         df = df.copy()
         df["is_valid"] = True
@@ -30,6 +32,8 @@ def run_validation(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd
 
         if table_rules.get("payment_value"):
             df = check_payments(df, table_name, table_rules["payment_value"])
+        if table_rules.get('order_valid'):
+            df = check_order(df, table_name, table_rules["order_valid"])
 
         # split data
         rejected = df[df["is_valid"] == False]
@@ -70,16 +74,7 @@ def check_null_values(df: pd.DataFrame, table_name: str, columns: list[str]) -> 
     return df
 
 
-def check_payments(df: pd.DataFrame, table_name: str, columns: list[str]) -> pd.DataFrame:
-    invalid_payment = (df[columns] <= 0).any(axis=1)
 
-    if invalid_payment.any():
-        logger.warning(f"Invalid payment values found in {table_name}")
-
-        df.loc[invalid_payment, "is_valid"] = False
-        df.loc[invalid_payment, "error_reason"] += "invalid_payment"
-
-    return df
 
 
 
