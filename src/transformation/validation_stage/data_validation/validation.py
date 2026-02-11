@@ -1,5 +1,5 @@
-from src.transformation.pre_validation_stage.orders import check_order
-from src.transformation.pre_validation_stage.payments import check_payments
+from src.transformation.validation_stage.pre_validation_stage.orders import check_order
+from src.transformation.validation_stage.pre_validation_stage.payments import check_payments
 from src.utils.helpers import save
 from src.utils.logger import get_logger
 import pandas as pd

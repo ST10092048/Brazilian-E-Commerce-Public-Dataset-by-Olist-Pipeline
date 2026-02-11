@@ -3,7 +3,7 @@ import pandas as pd
 from src.utils.helpers import save
 from src.utils.logger import get_logger
 
-logger = get_logger(__name__,module_name='payment_validation')
+logger = get_logger(__name__,module_name='join_validation')
 def join_orders_payments(orders: pd.DataFrame,payments:pd.DataFrame) -> pd.DataFrame:
     try:
         order_payments = orders.merge(
