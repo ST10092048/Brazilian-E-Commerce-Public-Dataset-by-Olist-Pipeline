@@ -3,7 +3,7 @@ import pandas as pd
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__,module_name='clean')
-def run_cleaning(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.DataFrame]:
+def data_run_cleaning(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.DataFrame]:
     cleaned = {}
 
     for table_name, df in tables.items():

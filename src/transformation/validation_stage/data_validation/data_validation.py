@@ -6,7 +6,7 @@ import pandas as pd
 
 logger = get_logger(__name__,module_name='pre_validation_stage')
 
-def run_validation(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.DataFrame]:
+def data_validation(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd.DataFrame]:
 
     validated_tables = {}
 

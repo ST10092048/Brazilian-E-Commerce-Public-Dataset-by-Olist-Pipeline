@@ -31,16 +31,18 @@ def run_enrichment(tables: dict[str, pd.DataFrame], rules: dict) -> dict[str, pd
 
     return enriched_tables
 
-def run_joins(tables: dict[str, pd.DataFrame])-> pd.DataFrame:
-    orders_df = tables.get("olist_orders_dataset")
-    payments_df = tables.get("olist_order_payments_dataset")
-
-    if orders_df is None or payments_df is None:
-        logger.warning("Both 'orders' and 'payments' tables must be present")
-        return pd.DataFrame()
 
 
-    order_payments_df = join_orders_payments(orders_df, payments_df)
+def run_joins(tables: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
 
+    join_steps = [
+        join_orders_payments,
+    ]
 
-    return order_payments_df
+    results = {}
+
+    for join_func in join_steps:
+        name, df = join_func(tables)
+        results[name] = df
+
+    return results
