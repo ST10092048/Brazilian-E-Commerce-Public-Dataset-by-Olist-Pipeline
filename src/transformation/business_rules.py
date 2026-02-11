@@ -16,10 +16,10 @@ TABLE_RULES = {
         'not_null': ['order_id', 'order_item_id', 'product_id', 'seller_id', 'price', 'freight_value',
                      'shipping_limit_date'],
         'payment_value': ['price'],
-        'quality_columns': ['order_id', 'price', 'product_id', 'seller_id'],
-        'enrichment': {
-            "add_time_columns": ["shipping_limit_date"],
-        }
+        # 'quality_columns': ['order_id', 'price', 'product_id', 'seller_id'],
+        # 'enrichment': {
+        #     "add_time_columns": ["shipping_limit_date"],
+        # }
     },
     'olist_order_payments_dataset': {
         'string_cols': ['payment_type'],
